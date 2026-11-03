@@ -1,0 +1,1 @@
+# Jurnal_Umum_ACCURATE_ONLINE

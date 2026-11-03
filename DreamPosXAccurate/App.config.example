@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <configSections>
+    <sectionGroup name="userSettings" type="System.Configuration.UserSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <section name="DreamPosXAccurate.My.MySettings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" allowExeDefinition="MachineToLocalUser" requirePermission="false" />
+    </sectionGroup>
+  </configSections>
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.5" />
+  </startup>
+  <appSettings>
+    <!-- ============================================================== -->
+    <!-- KONFIGURASI ACCURATE ONLINE (MIGRASI DARI TABEL CLD_OUTLET)     -->
+    <!-- ============================================================== -->
+    <!-- Konfigurasi Default / Brand 1 (FongSheng Office) -->
+    <add key="Accurate_ClientID" value="" />
+    <add key="Accurate_ClientSecret" value="" />
+    <add key="Accurate_AuthUser" value="" />
+    <add key="Accurate_StoreName" value="" />
+    <add key="Accurate_CompCode" value="" />
+    <add key="Accurate_AccountingApp" value="" />
+    <add key="Accurate_OAuthRedirectUri" value="" />
+    <add key="Accurate_OAuthResponseType" value="" />
+    <add key="Accurate_OAuthScope" value="" />
+    <add key="Accurate_ApiKey" value="" />
+    <add key="Accurate_Token" value="" />
+    <add key="Accurate_DatabaseId" value="" />
+    <!-- Konfigurasi Spesifik Brand 1 (FongSheng Office) -->
+    <add key="Accurate_Brand1_ClientID" value="" />
+    <add key="Accurate_Brand1_ClientSecret" value="" />
+    <add key="Accurate_Brand1_AuthUser" value="" />
+    <add key="Accurate_Brand1_StoreName" value="" />
+    <add key="Accurate_Brand1_CompCode" value="" />
+    <add key="Accurate_Brand1_AccountingApp" value="" />
+    <add key="Accurate_Brand1_ApiKey" value="" />
+    <add key="Accurate_Brand1_Token" value="" />
+    <!-- Konfigurasi Spesifik Brand 2 (HUANGFONG OFFICE) -->
+    <add key="Accurate_Brand2_ClientID" value="" />
+    <add key="Accurate_Brand2_ClientSecret" value="" />
+    <add key="Accurate_Brand2_AuthUser" value="" />
+    <add key="Accurate_Brand2_StoreName" value="" />
+    <add key="Accurate_Brand2_CompCode" value="" />
+    <add key="Accurate_Brand2_AccountingApp" value="" />
+    <add key="Accurate_Brand2_ApiKey" value="" />
+    <add key="Accurate_Brand2_Token" value="" />
+  </appSettings>
+  <userSettings>
+    <DreamPosXAccurate.My.MySettings>
+      <setting name="sTimeSyncProduct" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="sTimeSyncTrans" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="sKoneksi" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="solid" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="scustid" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="service_coa" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="PB1_coa" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="Discount_coa" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="rounding_coa" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="customer_no" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="itemtax" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="taxperitem" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="ErrLog" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="sStoreName" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="sUser" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="sClientID" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="sTime" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="emailName" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="emailPass" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="emailHost" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="emailPort" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="emailTarget" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+      <setting name="sPw" serializeAs="String">
+        <value>
+        </value>
+      </setting>
+    </DreamPosXAccurate.My.MySettings>
+  </userSettings>
+</configuration>

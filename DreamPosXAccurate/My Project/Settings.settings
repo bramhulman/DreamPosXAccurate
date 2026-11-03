@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="My" GeneratedClassName="MySettings" UseMySettingsClassName="true">
+  <Profiles />
+  <Settings>
+    <Setting Name="sTimeSyncProduct" Type="System.String" Scope="User">
+      <Value Profile="(Default)">20:00</Value>
+    </Setting>
+    <Setting Name="sTimeSyncTrans" Type="System.String" Scope="User">
+      <Value Profile="(Default)">20:05</Value>
+    </Setting>
+    <Setting Name="sKoneksi" Type="System.String" Scope="User">
+      <Value Profile="(Default)">
+      </Value>
+    </Setting>
+    <Setting Name="solid" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="scustid" Type="System.String" Scope="User">
+      <Value Profile="(Default)">19</Value>
+    </Setting>
+    <Setting Name="service_coa" Type="System.String" Scope="User">
+      <Value Profile="(Default)">400001</Value>
+    </Setting>
+    <Setting Name="PB1_coa" Type="System.String" Scope="User">
+      <Value Profile="(Default)">210210</Value>
+    </Setting>
+    <Setting Name="Discount_coa" Type="System.String" Scope="User">
+      <Value Profile="(Default)">440101</Value>
+    </Setting>
+    <Setting Name="rounding_coa" Type="System.String" Scope="User">
+      <Value Profile="(Default)">7100.031</Value>
+    </Setting>
+    <Setting Name="customer_no" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C.00001</Value>
+    </Setting>
+    <Setting Name="itemtax" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PB1</Value>
+    </Setting>
+    <Setting Name="taxperitem" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="ErrLog" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\PCL\Jurnal_Umum_ACCURATE_ONLINE\DreamPosXAccurate\ErrLog.txt</Value>
+    </Setting>
+    <Setting Name="sStoreName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">FongSheng Office</Value>
+    </Setting>
+    <Setting Name="sUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)">
+      </Value>
+    </Setting>
+    <Setting Name="sClientID" Type="System.String" Scope="User">
+      <Value Profile="(Default)">
+      </Value>
+    </Setting>
+    <Setting Name="sTime" Type="System.String" Scope="User">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="emailName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">
+      </Value>
+    </Setting>
+    <Setting Name="emailPass" Type="System.String" Scope="User">
+      <Value Profile="(Default)">
+      </Value>
+    </Setting>
+    <Setting Name="emailHost" Type="System.String" Scope="User">
+      <Value Profile="(Default)">mail.dreamposcloud.com</Value>
+    </Setting>
+    <Setting Name="emailPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">587</Value>
+    </Setting>
+    <Setting Name="emailTarget" Type="System.String" Scope="User">
+      <Value Profile="(Default)">
+      </Value>
+    </Setting>
+    <Setting Name="sPw" Type="System.String" Scope="User">
+      <Value Profile="(Default)">
+      </Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
