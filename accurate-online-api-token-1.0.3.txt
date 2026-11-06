@@ -1,0 +1,738 @@
+                   Documentation Version
+
+          Date     Document Version                Description
+05 November 2023   1.0.0             Dokumentasi awal
+07 Juli 2025       1.0.1             Informasi tambahan:
+                                      - Tambah informasi mengenai
+08 Agustus 2025    1.0.2
+                                          akses ke Daftar API
+30 September 2025  1.0.3                  Accurate Online
+                                      - Tambah informasi mengenai
+                                          batasan pemanggilan API
+                                          Accurate Online
+                                      - Memperbarui screenshot
+                                          untuk menyesuaikan
+                                          perubahan tata letak di
+                                          interface Accurate Online
+                                          (Visual update only).
+                                     Informasi tambahan:
+                                      - Tambah informasi mengenai
+                                          adanya kemungkinan
+                                          perubahan alamat host pada
+                                          integrasi API Accurate
+                                          Online, serta panduan teknis
+                                          penanganannya melalui
+                                          response code 308
+                                          (Permanent Redirect).
+                                     Informasi tambahan:
+                                      - Tambah informasi mengenai
+                                          pengaturan Bahasa Asing
+                                          pada pesan kesalahan dan
+                                          peringatan API.
+                                      - Tambah informasi mengenai
+                                          link contoh Source Code
+                                          Integrasi API Accurate
+                                          Online.
+                                             Contents
+
+Documentation Version.....................................................................................1
+Contents............................................................................................................2
+Pendahuluan..................................................................................................... 1
+
+    Pendaftaran Aplikasi....................................................................................1
+Otorisasi............................................................................................................ 5
+
+    Install Aplikasi dan buat API Token............................................................. 6
+Penjelasan Headers........................................................................................ 11
+
+    Authorization..............................................................................................12
+    X-Api-Timestamp....................................................................................... 12
+    X-Api-Signature......................................................................................... 12
+Request API....................................................................................................13
+Info Kesalahan................................................................................................ 17
+Informasi Tambahan....................................................................................... 18
+    Daftar API Accurate Online....................................................................... 18
+    Contoh Source Code Integrasi API Accurate Online.................................18
+    Penyesuaian Terhadap Perubahan Host...................................................19
+    Pengaturan Bahasa pada Pesan Kesalahan dan Peringatan API............ 19
+    Batasan Pemanggilan API.........................................................................20
+Pendahuluan
+
+Accurate Online telah memiliki API yang dapat digunakan untuk berintegrasi
+dengan Sistem lain. Dengan menggunakan API Accurate Online, Sistem lain
+dapat mengirimkan instruksi baca dan tulis data ke Accurate Online secara
+pemrograman komputer, sehingga dapat terbentuk Integrasi.
+
+API yang disediakan Accurate Online adalah berbentuk Web Service dan
+instruksi yang yang diterima adalah berbentuk HTTP Request seperti GET
+dan POST.
+
+Dokumen ini tujukan ke pihak pemilik atau pengembang atau developer
+sistem yang ingin melakukan Integrasi ke Accurate Online, sebagai petunjuk
+cara melakukan otorisasi dengan cara API Token.
+
+Dokumen ini adalah untuk menjelaskan Integrasi menggunakan API Accurate
+Online dengan cara otorisasi API Token, penjelasan tentang cara otorisasi
+OAuth 2.0 dapat dilihat pada link https://accurate.id/api-integration/ dan tidak
+termasuk pada dokumen ini.
+
+API Token adalah token yang dapat digunakan oleh Aplikasi Pihak Ketiga
+(Developer) untuk dapat melakukan request API ke Database (Data Usaha)
+milik Pengguna Accurate Online (User).
+
+API Token adalah representasi dari otorisasi yang sudah diberikan atas nama
+User yang sudah membuatkan API Token ke sebuah Data Usaha, oleh
+karena itu segala pembatasan Hak Akses User yang berlaku pada Data
+Usaha tersebut juga akan membatasi request API yang dapat dilakukan.
+
+Satu User hanya dapat membuat satu API Token untuk satu Data Usaha per
+Aplikasi Developer. Tiap API Token memiliki batasan request API sebanyak 8
+request per detik, dan batasan 8 proses API paralel.
+
+API Token tidak memiliki waktu expire dan akan terus berlaku selama User
+masih memiliki Hak Akses ke Data Usaha. User dapat menghapus API Token
+yang sudah dibuat jika diperlukan untuk mencabut otorisasi yang sudah
+diberikan ke Developer.
+
+Pendaftaran Aplikasi
+
+Sebelum melakukan Integrasi API Accurate Online, Anda perlu melakukan
+Pendaftaran Aplikasi karena Aplikasi yang akan menggunakan API Accurate
+Online perlu didaftarkan di Area Developer Accurate Online yaitu melalui link
+berikut ini (https://account.accurate.id/developer).
+
+                                                                                                                            1
+Aplikasi pada Area Developer adalah representasi sistem milik Anda, dimana
+Accurate Online akan membuatkan credential yang dapat digunakan untuk
+memulai Otorisasi. Satu Aplikasi sudah dapat mampu terhubung ke semua
+Data Usaha User karena sudah dapat digunakan untuk memulai Otorisasi ke
+semua User.
+Langkah 1: Login atau Register
+Masukkan email dan password akun Accurate Online Anda lalu klik tombol
+login. Jika belum memiliki akun maka Anda perlu mendaftarkan diri terlebih
+dahulu.
+Jika Anda adalah bagian dari suatu organisasi maka disarankan untuk
+membuat Akun dan mendaftarkan diri sebagai Developer dengan
+menggunakan email organisasi, hal ini bertujuan agar akses ke Area
+Developer dapat dibagikan juga ke rekan kerja Anda.
+
+Langkah 2: Daftar sebagai Pengembang Aplikasi
+Setelah berhasil login, masuklah ke Area Developer dengan membuka link
+https://account.accurate.id/developer.
+Jika Anda sudah terdaftar sebagai Developer maka Anda dapat melewatkan
+langkah ini.
+Jika ada belum terdaftar sebagai Developer, halaman akan menampilkan
+langkah pendaftaran diri sebagai developer. Silahkan baca dan pahami syarat
+
+                                                                                                                            2
+dan kondisi yang berlaku, isikan nama Anda atau nama Organisasi Anda, beri
+tanda centang pada bagian "Saya setuju dengan semua syarat dan kondisi
+yang berlaku", kemudian klik tombol Daftar Sekarang.
+
+Langkah 3: Tambah Aplikasi Baru
+Setelah berhasil masuk ke Area Developer, pilih menu Aplikasi, lalu klik
+tombol Tambah Aplikasi Baru untuk mendaftarkan aplikasi yang akan
+diintegrasikan.
+Selain pada situasi khusus, Anda cukup mendaftarkan satu Aplikasi pada
+Area Developer. Satu Aplikasi sudah dapat mampu terhubung ke semua Data
+Usaha User karena sudah dapat digunakan untuk memulai Otorisasi ke
+semua User.
+Jika Anda sudah memiliki Aplikasi sebelumnya, Anda dapat melewati
+Langkah ini dan langsung menuju ke Langkah 6: Aktifkan API Token pada
+Aplikasi.
+
+Langkah 4: Isi Nama Aplikasi
+Isi kolom dengan nama aplikasi yang ingin didaftarkan kemudian klik
+tombol Simpan. Nama Aplikasi akan tampil dan terbaca oleh User saat proses
+
+                                                                                                                            3
+Otorisasi, gunakan Nama Aplikasi yang memudahkan User untuk mengenali
+Anda dan Aplikasi Anda.
+
+Langkah 5: Pilih Aplikasi
+Klik pada nama aplikasi yang telah dibuat.
+
+Langkah 6: Aktifkan API Token pada Aplikasi
+Developer dapat mengaktifkan API Token pada Aplikasi mereka dengan
+memilih menu API Token dan menekan tombol Aktifkan API Token.
+
+Developer akan mendapatkan App Key serta Signature Secret yang dapat
+digunakan untuk memulai tahapan Otorisasi.
+
+                                                                                                                            4
+Otorisasi
+
+Otorisasi diperlukan untuk mendapatkan akses terbatas terhadap Data Usaha
+yang dimiliki oleh User. Hasil dari otorisasi adalah sebuah Token yang
+merupakan representasi dari otorisasi yang sudah diberikan User untuk dapat
+melakukan integrasi ke Data Usaha mereka.
+
+Developer dapat melakukan otorisasi dengan cara OAuth 2.0 ataupun dengan
+cara otorisasi API Token. Dokumen hanya akan menjelaskan tentang cara
+otorisasi API Token. Penjelasan tentang OAuth 2.0 dapat dilihat pada link
+https://accurate.id/api-integration/oauth/ dan tidak termasuk di dokumen ini.
+
+Otorisasi dengan cara API Token secara garis besar dibagi menjadi 2 tahap:
+    1. User melakukan Install Aplikasi dan membuat API Token
+         Pada tahap ini User perlu melakukan Install Aplikasi agar Aplikasi milik
+         Developer terinstall ke Data Usaha User. User kemudian dapat
+         membuat Akses Token untuk Aplikasi tersebut, dan mengirimkan
+         Token yang sudah terbuat ke pihak Developer.
+    2. Developer menggunakan API Token untuk mengakses Data User
+         Setelah menerima API Token dari User, Developer dapat
+         menggunakan API Token tersebut untuk mengakses Data Usaha User
+         lewat API Accurate Online.
+
+Berikut ini adalah diagram yang menggambarkan garis besar interaksi antara
+Aplikasi Pihak Ketiga (Developer), pengguna Accurate Online (User) dan
+Accurate Online (Authorization) dalam proses Pengaktifan API Token:
+
+                                                                                                                            5
+Install Aplikasi dan buat API Token
+
+Tahap ini perlu dilakukan oleh pihak yang memiliki akses untuk membuka
+aplikasi web https://accurate.id dari Data Usaha yang hendak diintegrasikan,
+jika Anda adalah Developer yang tidak memiliki akses tersebut, maka
+informasikan langkah-langkah berikut ke pihak User yang memiliki akses ke
+Data Usaha yang hendak diintegrasikan.
+Langkah 1: Login dan masuk ke Data Usaha
+User dapat login ke https://accurate.id, login sesuai dengan akun accurate.id
+yang dimiliki. Setelah terlogin, masuklah ke Data Usaha yang Anda hendak
+diintegrasikan.
+
+                                                                                                                            6
+Langkah 2: Install Aplikasi
+Setelah berada di Data Usaha, Install aplikasi Developer ke Data Usaha
+tersebut lewat halaman Accurate Store ­ Aplikasi Saya (menu Pengaturan -
+Accurate Store lalu klik bagian Aplikasi Saya).
+Klik tombol Install Aplikasi, kemudian masukkan nilai App Key dari aplikasi
+Developer.
+
+                                                                                                                            7
+Untuk dapat melakukan Install Aplikasi, User harus memiliki jenis Hak Akses
+Administrator pada Data Usaha tersebut.
+Sebagai contoh, jika Kita ingin menginstall aplikasi Developer dengan nilai
+App Key dari aplikasi Developer adalah 6c89274a-0ddf-43e1-88b0-e9781ca5
+8b74. Sehingga App Key tersebut dapat Kita gunakan pada saat Install
+Aplikasi.
+
+Setelah klik Install Aplikasi, harap perhatikan informasi-informasi seperti
+Syarat Ketentuan dan Tambahan Biaya yang mungkin muncul.
+
+Klik Install apabila menyetujuinya, setelah klik Install akan muncul Pop Up
+dengan keterangan "Aplikasi berhasil terinstall". Setelah terinstall, aplikasi
+Developer yang diinstall akan muncul pada halaman Aplikasi Saya.
+
+                                                                                                                            8
+Langkah 3: Buat API Token
+User dapat membuat API Token pada halaman Accurate Store ­ API Token
+(menu Pengaturan - Accurate Store).
+Pada satu Data Usaha, satu User hanya dapat membuat satu API Token
+untuk satu Aplikasi yang sudah terinstall.
+User tidak diharuskan memiliki jenis Hak Akses Administrator untuk dapat
+membuat API Token, jenis Hak Akses Operator juga dapat digunakan untuk
+membuat API Token.
+User yang membuat API Token juga diperbolehkan berbeda dengan User
+yang melakukan Langkah Install Aplikasi.
+Jika terdapat kebutuhan untuk membatasi akses dari API Token yang terbuat
+terhadap fitur-fitur tertentu, maka dapat menggunakan login User dengan
+jenis Hak Akses Operator yang sudah dipasangkan ke Akses Grup
+(https://ultimasolusindo.com/manual-book/pendalaman-fitur/pengaturan/akses
+-grup/).
+Untuk mulai membuat API Token, klik tombol Buat API Token, akan ada
+tampilan untuk Pilih Aplikasi yang ingin dibuatkan API Token. Disini User
+dapat memilih Aplikasi yang sebelumnya sudah terinstall. Sebagai contoh
+sebelumnya Kami menginstall aplikasi Developer yaitu Application -
+Developer maka API Token yang Kami aktifkan adalah untuk aplikasi
+Application - Developer, sebagai berikut:
+
+                                                                                                                            9
+Setelah memilih aplikasi yang ingin dibuatkan API Token, klik tombol Buat API
+Token.
+
+                                                                                                                          10
+User diwajibkan untuk membaca dan memahami Syarat dan Ketentuan API
+Token yang muncul.
+
+Apabila User menyetujui terbuatnya API Token ini, maka dapat mencentang
+pada "Saya telah Membaca dan Setuju dengan Syarat dan Ketentuan API
+Token" dan klik tombol Buat Token. User dapat melihat API Token yang
+terbuat pada halaman yang tampil.
+
+API Token yang sudah terbuat dapat diberikan kepada pihak Developer agar
+mereka dapat melakukan integrasi ke Data Usaha ini dengan menggunakan
+API Accurate Online.
+
+Agar keamanan Akses Data Usaha tetap terjaga, User diwajibkan menjaga
+API Token yang sudah dibuat dan hanya memberikan API Token pada pihak
+Developer yang sudah dipercayakan untuk diberikan akses.
+
+Penjelasan Headers
+
+Setelah mendapatkan API Token, Developer dapat menggunakannya untuk
+melakukan request API. Berikut adalah HTTP Headers yang perlu disertakan
+pada saat mengirimkan instruksi GET maupun POST secara API ke Data
+Usaha User:
+
+Parameter        Type                 Description
+Authorization    Bearer Token         API Token dari User
+X-Api-Timestamp  dd/mm/yyyy hh:nn:ss  Tanggal dan Jam request API
+                 or ISO 8601          dikirimkan
+X-Api-Signature                       Nilai HMAC-SHA256 dari
+                 Payload Signature    X-Api-Timestamp dengan
+                                      menggunakan Signature
+
+                                      11
+                                Secret sebagai Key
+
+Authorization
+
+Authorization yang dikirimkan ketika melakukan request API adalah berasal
+dari API Token yang sudah dibuat oleh User. Developer wajib mengirimkan
+API Token sebagai Header Authorization dengan tipe Bearer Token.
+
+X-Api-Timestamp
+
+Nilai Header X-Api-Timestamp adalah tanggal dan jam request API
+dikirimkan. Header ini wajib dikirimkan pada semua request API yang
+menggunakan Authorization API Token.
+
+Accurate Online memberikan batas toleransi perbedaan timestamp yang
+dikirim sebesar 600 detik, nilai timestamp yang lebih atau kurang dari 600
+detik dari waktu request API tersebut diterima akan ditolak oleh Sistem API
+Accurate Online.
+
+Accurate Online dapat menerima berbagai jenis format nilai Header
+X-Api-Timestamp sebagai berikut:
+
+Example Timestamp          Description
+25/12/2023 13:42:39        dd/mm/yyyy hh:nn:ss
+2023-11-02T09:32:43        ISO 8601 WIB
+2023-11-02T02:32:43Z       ISO 8601 UTC / GMT
+2023-11-02T10:32:43+0800   ISO 8601 with Time Zone
+1698903037                 Unix Timestamp Second
+1698903037551              Unix Timestamp Millisecond
+
+X-Api-Signature
+
+Nilai Header X-Api-Signature adalah hasil HMAC SHA-256 dari nilai Header
+X-Api-Timestamp, dengan menggunakan Signature Secret sebagai Key.
+Berikut adalah contoh melakukan HMAC SHA-256 untuk X-Api-Signature:
+
+Enter Plain Text to Compute Hash 02/11/2023 09:01:01
+
+Enter the Secret Key       31d49b3dc632614495ff8071e5be4
+
+                           4a1
+
+Select Cryptographic Hash  HMAC SHA-256
+
+Function
+
+Hashed Output:
+
+8NxvylwwMcjGyzVXK0qbwNvFFuzHpwE9tECllVwLkbo=
+
+                                                       12
+Jika hasil HMAC SHA-256 adalah Byte, maka perlu dilakukan encode
+menggunakan Base64 Encoding atau Hex Encoding sebelum dikirimkan
+sebagai Header X-Api-Signature.
+
+Request API
+
+Pada tahap ini Developer perlu melakukan request API /api-token.do agar
+dapat memberikan instruksi berupa GET maupun POST ke data usaha User.
+Berikut adalah contoh request API /api-token.do yang dapat dilakukan oleh
+Developer :
+
+URL            https://account.accurate.id/api/api-token.do
+Method         HTTP POST
+Headers
+Authorization  Bearer
+               aat.MTUw.eyJ2IjoxLCJ1Ijo1MDAsImQiOjIwNTYs
+               ImFpIjo1MDAsImFrIjoiNmM4OTI3NGEtMGRkZi0
+               0M2UxLTg4YjAtZTk3ODFjYTU4Yjc0IiwiYW4iOiJ
+               BcHBsaWNhdGlvbiAtIERldmVsb3BlciIsImFwIjoi
+               Mzc5Njk0MDAtY2JiMi00MDMwLWI4YTQtMWM
+               wODYzNjZmYTNmIiwidCI6MTcwMDYyNTAwNTg
+               zOX0.gTvGvIy/tAX/FFJBv7GOB6mjOCkAviz5hTc
+               fyybJ+b5IeOCD2qMMgTONtUxvj4dYGksRcaoQv
+               /uSxYyD/wga6ziTDlI6BSKi38uIXAR+SV7O8mJ8
+
+               13
+X-Api-Timestamp  OJnaPqVqVfhdw/rS543U5vhvLhrf+TgDqaa06dV
+X-Api-Signature  cCrcUV1YGcTZiig7U2q6tRtOZGa2L72ycm5AIqg
+                 rU.sFpjlOb+vaoSHMEyjrHn3vYU6ZSvu8ecUPgF
+                 SP3xudUPdHZih75cUqNu1M1IiFhlQFYzH9iUNN
+                 GeOcLafvrS+ydYgooHDsQCMuV7d7dlD+S2zDa
+                 YmvQnvJWKEsWye6fjeEor+a8W34VQW8DVEd
+                 UC06fo0NQVpCvvQKik0h2TBkqq7kWgiT8BHPs
+                 D7yBQnqNVOQo08E7AQV4fy8CLOpjFe5jcbKB1
+                 AmoLlASbgNnLUwQ=.Th/iZV03ynB1zwsgMjzpcy
+                 3/AE0+yowrawUWkwb7R0o
+                 02/11/2023 09:01:01
+                 8NxvylwwMcjGyzVXK0qbwNvFFuzHpwE9tECllV
+                 wLkbo=
+
+Jika berhasil melakukan request API /api-token.do maka akan mendapatkan
+response seperti contoh berikut:
+{
+
+       "s": true,
+       "d": {
+
+              "data usaha": {
+                      "license": {
+                             "education": false,
+                             "licenseEnd": "01/12/2023",
+                             "accessibleUntil": "06/12/2023",
+                             "sample": false,
+                             "trial": true
+                      },
+                      "deleted": false,
+                      "bgColor": "FFFFFF",
+                      "host": "https://zeus.accurate.id",
+                      "alias": "PT AOL User",
+                      "logo": "",
+                      "admin": true,
+                      "id": 96400,
+                      "logoUrl": ""
+
+              },
+              "application": {
+
+                      "name": "Application - Developer ",
+
+                                                                                                                          14
+                      "appKey": "6c89274a-0ddf-43e1-88b0-e9781ca58b74"
+              },
+              "tokenType": "api",
+              "user": {
+
+                      "gender": "male",
+                      "nickName": "penggunaAOL@example.com",
+                      "mobile": null,
+                      "fullName": "penggunaAOL@example.com",
+                      "id": 36000,
+                      "locale": "in-ID",
+                      "email": "penggunaAOL@example.com",
+                      "picture": null
+              }
+       }
+}
+
+Request API /api-token.do ini bertujuan untuk menampilkan informasi dari API
+Token yang digunakan, seperti User dan Data Usaha dari API Token, disini
+Developer perlu membaca nilai host dari response /api-token.do karena host
+ini sebagai url awal yang digunakan ketika melakukan request API Accurate
+Online ke Data Usaha User.
+
+Perlu diperhatikan bahwa nilai host dapat berubah sewaktu-waktu, jika hal
+tersebut terjadi maka Anda akan mendapatkan HTTP response code 308
+(permanent redirect) ke host yang benar, pastikan Anda telah mempersiapkan
+integrasi untuk dapat menghandle hal tersebut dengan mengaktifkan Follow
+Redirect pada HTTP client library yang digunakan untuk melakukan request
+API. Informasi selengkapnya dapat dilihat pada Informasi Tambahan
+dibawah ini.
+
+Sebagai contoh di atas response dari API /api-token.do yang diterima adalah
+mendapatkan host https://zeus.accurate.id, maka host ini yang harus
+digunakan sebagai url awal dalam melakukan request API Accurate Online
+seperti /api/sales-invoice/list.do maupun API Accurate Online lainnya. Berikut
+adalah contoh request /api/sales-invoice/list.do dengan API Token:
+
+URL            https://zeus.accurate.id/accurate/api/sales-invoice/lis
+               t.do
+Method         HTTPS GET
+Headers
+Authorization  Bearer
+               aat.MTUw.eyJ2IjoxLCJ1Ijo1MDAsImQiOjIwNTYsIm
+               FpIjo1MDAsImFrIjoiNmM4OTI3NGEtMGRkZi00M2U
+               xLTg4YjAtZTk3ODFjYTU4Yjc0IiwiYW4iOiJBcHBsa
+               WNhdGlvbiAtIERldmVsb3BlciIsImFwIjoiMzc5Njk0M
+
+               15
+                   DAtY2JiMi00MDMwLWI4YTQtMWMwODYzNjZmYT
+
+                   NmIiwidCI6MTcwMDYyNTAwNTgzOX0.gTvGvIy/tAX
+
+                   /FFJBv7GOB6mjOCkAviz5hTcfyybJ+b5IeOCD2qM
+
+                   MgTONtUxvj4dYGksRcaoQv/uSxYyD/wga6ziTDlI6B
+
+                   SKi38uIXAR+SV7O8mJ8OJnaPqVqVfhdw/rS543U5
+
+                   vhvLhrf+TgDqaa06dVcCrcUV1YGcTZiig7U2q6tRtO
+
+                   ZGa2L72ycm5AIqgrU.sFpjlOb+vaoSHMEyjrHn3vYU
+
+                   6ZSvu8ecUPgFSP3xudUPdHZih75cUqNu1M1IiFhl
+
+                   QFYzH9iUNNGeOcLafvrS+ydYgooHDsQCMuV7d7
+
+                   dlD+S2zDaYmvQnvJWKEsWye6fjeEor+a8W34VQ
+
+                   W8DVEdUC06fo0NQVpCvvQKik0h2TBkqq7kWgiT8
+
+                   BHPsD7yBQnqNVOQo08E7AQV4fy8CLOpjFe5jcbK
+
+                   B1AmoLlASbgNnLUwQ=.Th/iZV03ynB1zwsgMjzpcy
+
+                   3/AE0+yowrawUWkwb7R0o
+
+X-Api-Timestamp 02/11/2023 09:01:01
+
+X-Api-Signature    8NxvylwwMcjGyzVXK0qbwNvFFuzHpwE9tECllVwL
+
+                   kbo=
+
+Request Parameter
+
+fields             id,number
+
+Contoh hasil request /api/sales-invoice/list.do adalah sebagai berikut:
+{
+
+       "s": true,
+       "d": [
+
+              {
+                      "number": "SI.2023.11.00001",
+                      "id": 651
+
+              },
+              {
+
+                      "number": "SI#96-2335",
+                      "id": 702
+              },
+              {
+                      "number": "SI-2023-001",
+                      "id": 500
+              }
+       ],
+       "sp": {
+              "page": 1,
+              "sort": null,
+              "pageSize": 20,
+              "pageCount": 1,
+              "rowCount": 3,
+              "start": 0,
+              "limit": null
+       }
+
+                                                                         16
+}
+
+Selain /api/sales-invoice/list.do, Developer dapat melihat daftar API Accurate
+Online yang dapat digunakan dapat dilihat di halaman Area Developer pada
+menu Daftar API (https://account.accurate.id/developer/api-docs.do).
+
+Info Kesalahan
+
+Berikut ini adalah daftar informasi kesalahan yang bisa didapatkan ketika
+mencoba menggunakan API Token Accurate Online, beserta penjelasan dan
+solusinya.
+
+Error Message                   Description & Solution
+Unauthorized                    Error ini dikarenakan nilai API Token
+Invalid_token                   belum dikirimkan, untuk mengatasi
+                                masalah ini silahkan kirimkan nilai API
+Invalid or Revoked API Token    Token yang tepat.
+                                Error ini dikarenakan API Token yang
+Header X-Api-Signature is       digunakan tidak tepat atau salah,
+required                        untuk mengatasi masalah ini silahkan
+                                periksa nilai API Token yang
+Header X-Api-Signature invalid  dikirimkan.
+                                Error ini dikarenakan API Token
+Header X-Api-Timestamp is       sudah invalid atau dicabut oleh User,
+required                        untuk mengatasi masalah ini silahkan
+                                pastikan kembali kepada User untuk
+                                API Token yang Anda digunakan.
+                                Error ini dikarenakan parameter
+                                X-Api-Signature tidak dikirimkan,
+                                parameter X-Api-Signature harus diisi
+                                dengan nilai yang didapat dari HMAC
+                                SHA-256 (Signature Secret dan
+                                Timestamp).
+                                Error ini dikarenakan parameter
+                                X-Api-Signature tidak tepat, untuk
+                                mengatasi masalah ini silahkan
+                                periksa nilai X-Api-Signature yang
+                                Anda kirimkan.
+                                Error ini dikarenakan parameter
+                                X-Api-Timestamp tidak dikirimkan,
+                                parameter X-Api-Timestamp harus
+                                diisi dengan nilai Timestamp yang
+
+                                                                         17
+Header X-Api-Timestamp invalid  sesuai dengan nilai Timestamp yang
+                                dilakukan HMAC SHA-256.
+Header X-Api Timestamp          Error ini dikarenakan parameter
+difference more than 600        X-Api-Timestamp yang dikirimkan
+seconds with Server Time        tidak sesuai format yang seharusnya,
+Mendapatkan error lain yang     misalkan format yang seharusnya
+tidak dipahami                  dikirimkan adalah dd/mm/yyyy
+                                hh:nn:ss tetapi mengirimkan nilai
+                                X-Api-Timestamp dengan format
+                                hh:nn:ss dd/mm/yyyy, sehingga untuk
+                                mengatasi error ini silahkan kirimkan
+                                format Timestamp sesuai dengan
+                                ketentuan.
+                                Error ini dikarenakan nilai Timestamp
+                                yang dikirimkan melebihi 600 detik
+                                dengan waktu Server, untuk
+                                mengatasi error ini silahkan kirimkan
+                                nilai Timestamp yang sesuai dengan
+                                waktu Server yang terbaru.
+                                Jika Anda mengalami kendala atau
+                                mempunyai pertanyaan lain seputar
+                                API Token maupun dalam
+                                penggunaan API Accurate Online,
+                                Anda dapat menghubungi email
+                                aol-integration@cpssoft.com.
+
+Informasi Tambahan
+
+Daftar API Accurate Online
+
+Untuk Daftar API Accurate Online yang tersedia serta dapat digunakan, dapat
+diakses pada menu Area Developer - Daftar API maupun dapat diakses
+melalui link berikut ini https://account.accurate.id/developer/api-docs.do dan
+Accurate Online juga memiliki open API skema yang dapat diakses pada link
+berikut ini https://account.accurate.id/open-api/json.do.
+
+Contoh Source Code Integrasi API Accurate Online
+
+Untuk memudahkan proses integrasi, Accurate Online menyediakan
+beberapa contoh source code aplikasi yang telah menggunakan API Accurate
+Online. Contoh tersebut dapat diakses melalui repositori berikut
+https://github.com/aol-integration.
+
+                                                                       18
+Penyesuaian Terhadap Perubahan Host
+
+Jika terjadi perubahan nilai host API Accurate Online, pemanggilan API
+dengan host lama akan menghasilkan response code 308 (Permanent
+Redirect). Untuk menghindari gangguan integrasi, pastikan sistem Anda
+mengaktifkan konfigurasi berikut pada aplikasi client seperti Postman atau
+library HTTP client lain:
+
+     Automatically Follow Redirects (agar permintaan otomatis diarahkan ke
+         host baru).
+
+     Follow Original HTTP Method (agar metode HTTP seperti POST tidak
+         berubah menjadi GET saat redirect).
+
+     Follow Authorization Header (agar token otorisasi tetap dikirim saat
+         redirect).
+
+Penggunaan Follow Redirect bersifat sementara untuk memastikan sistem
+integrasi tetap dapat berjalan meskipun terjadi perubahan host, Anda tetap
+diwajibkan mengganti host yang digunakan mengirimkan request API sesuai
+nilai host yang terbaru. Hal ini bisa dilakukan dengan membaca body dari
+hasil response 308 atau dengan melakukan pengecekan berkala terhadap
+host terbaru melalui API /api-token.do setiap 30 hari sekali.
+
+Pengaturan Bahasa pada Pesan Kesalahan dan Peringatan API
+
+Jika Anda ingin text kesalahan dan peringatan API ditampilkan dalam Bahasa
+Asing Anda perlu menambahkan Headers X-Language-Profile pada setiap
+request. Saat ini tersedia 3 pilihan Bahasa yaitu Indonesia, English (US), dan
+Chinese (CN). Berikut contoh penggunaan Headers tersebut:
+
+URL            https://zeus.accurate.id/accurate/api/item/save.do
+Method         HTTPS POST
+Headers
+Authorization  Bearer
+               aat.MTUw.eyJ2IjoxLCJ1Ijo1MDAsImQiOjIwNTYsIm
+               FpIjo1MDAsImFrIjoiNmM4OTI3NGEtMGRkZi00M2U
+               xLTg4YjAtZTk3ODFjYTU4Yjc0IiwiYW4iOiJBcHBsa
+               WNhdGlvbiAtIERldmVsb3BlciIsImFwIjoiMzc5Njk0M
+               DAtY2JiMi00MDMwLWI4YTQtMWMwODYzNjZmYT
+               NmIiwidCI6MTcwMDYyNTAwNTgzOX0.gTvGvIy/tAX
+               /FFJBv7GOB6mjOCkAviz5hTcfyybJ+b5IeOCD2qM
+               MgTONtUxvj4dYGksRcaoQv/uSxYyD/wga6ziTDlI6B
+               SKi38uIXAR+SV7O8mJ8OJnaPqVqVfhdw/rS543U5
+               vhvLhrf+TgDqaa06dVcCrcUV1YGcTZiig7U2q6tRtO
+               ZGa2L72ycm5AIqgrU.sFpjlOb+vaoSHMEyjrHn3vYU
+               6ZSvu8ecUPgFSP3xudUPdHZih75cUqNu1M1IiFhl
+
+               19
+                 QFYzH9iUNNGeOcLafvrS+ydYgooHDsQCMuV7d7
+
+                 dlD+S2zDaYmvQnvJWKEsWye6fjeEor+a8W34VQ
+
+                 W8DVEdUC06fo0NQVpCvvQKik0h2TBkqq7kWgiT8
+
+                 BHPsD7yBQnqNVOQo08E7AQV4fy8CLOpjFe5jcbK
+
+                 B1AmoLlASbgNnLUwQ=.Th/iZV03ynB1zwsgMjzpcy
+
+                 3/AE0+yowrawUWkwb7R0o
+
+X-Api-Timestamp 02/11/2023 09:01:01
+
+X-Api-Signature  8NxvylwwMcjGyzVXK0qbwNvFFuzHpwE9tECllVwL
+
+                 kbo=
+
+X-Language-Profile US
+
+Request Body JSON
+
+{
+       "name": "Item Test",
+       "itemType": "INVENTORY",
+       "itemCategoryName": "Umum",
+       "unit1Name": "PCS"
+
+}
+
+Hasil dari request tersebut adalah sebagai berikut:
+{
+
+   "r": {
+       "id": 1251,
+       "no": "100028",
+       "name": "Item Test",
+       "upcNo": null,
+       "itemType": "INVENTORY",
+       "notes": null,
+       "detailOpenBalance": [],
+         ....
+
+   },
+   "s": true,
+   "d": [
+
+       "Item \"Item Test\" has been successfully saved"
+   ]
+}
+
+Jika Headers X-Language-Profile tidak dikirim, maka text kesalahan dan
+peringatan API akan ditampilkan dalam Bahasa default (Bahasa Indonesia).
+
+Batasan Pemanggilan API
+
+API Accurate Online memiliki batasan pemanggilan API yaitu maksimal 8
+pemanggilan API per detik dan maksimal 8 proses paralel yang berjalan.
+
+                                                            20
+Yang dimaksud dengan 8 pemanggilan per detik adalah dalam 1 detik yang
+sama Anda melakukan pemanggilan 8 API sekaligus dan jika Anda
+melakukan pemanggilan API kembali di detik yang sama maka ini artinya
+sudah ada pemanggilan 9 API dalam 1 detik yang sama dan hal ini akan
+menyebabkan error karena melebihi batasan API yaitu maksimal 8
+pemanggilan per detik.
+Sedangkan yang dimaksud dengan 8 proses paralel yang berjalan adalah
+apabila Anda sedang melakukan pemanggilan API pertama seperti
+/api/sales-invoice/save.do tetapi belum menampilkan response berhasil atau
+gagal, tetapi Anda sudah melakukan pemanggilan API kedua seperti
+/api/sales-invoice/list.do dan sama-sama belum menampilkan response,
+maka ini artinya sudah ada 2 proses paralel yang berjalan dan jika sampai
+melebihi 8 maka akan menampilkan error karena maksimal 8 proses paralel
+yang berjalan.
+
+                                                                                                                          21
+

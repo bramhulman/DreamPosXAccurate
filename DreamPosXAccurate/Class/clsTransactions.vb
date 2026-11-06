@@ -1454,9 +1454,8 @@ Public Class clsTransactions
         
         For Each item In b
             If Not item.s Then
-                Dim msg As String = item.GetValue_d()
-                If Not (msg.IndexOf("Sudah ada data lain", StringComparison.OrdinalIgnoreCase) >= 0 OrElse
-                        msg.IndexOf("melebihi nilai piutang", StringComparison.OrdinalIgnoreCase) >= 0) Then
+                Dim msg As String = If(item.GetValue_d(), "Accurate menolak penerimaan tanpa pesan error.")
+                If msg.IndexOf("Sudah ada data lain", StringComparison.OrdinalIgnoreCase) < 0 Then
                     allSuccess = False
                     realErrors.Add(msg)
                 End If
@@ -1471,7 +1470,7 @@ Public Class clsTransactions
                 .dispose()
             End With
             If b.Any(Function(x) x.s = False) Then
-                errLog("Penerimaan penjualan harian tanggal " & dfrom.ToString("yyyy-MM-dd") & " membalas error yang diabaikan (duplikat/safe), ditandai sebagai sudah terkirim.", "clsTransactions.SaveTransReceiptSumSalesDaily")
+                errLog("Penerimaan penjualan harian tanggal " & dfrom.ToString("yyyy-MM-dd") & " sudah ada di Accurate, ditandai sebagai sudah terkirim.", "clsTransactions.SaveTransReceiptSumSalesDaily")
             End If
         Else
             Dim combinedError As String = String.Join(" | ", realErrors)
@@ -1479,7 +1478,7 @@ Public Class clsTransactions
             With cCMD
                 Dim tgl1 As Date = Now.Date()
                 Dim errMsg As String = SafeSqlText(combinedError)
-                Dim shortErrMsg As String = If(errMsg.Length > 20, errMsg.Substring(0, 20), errMsg)
+                Dim shortErrMsg As String = SafeSqlText(combinedError.Substring(0, Math.Min(20, combinedError.Length)))
                 .resetCmd("REPLACE INTO cld_syncsales VALUES ('" & dfrom.ToString("yyyy-MM-dd 00:00:00") & "' ," & solid & " ,'Acc' ,'Payment Not_success: " & shortErrMsg & "' ,'" & scustid & "' ,'" & tgl1.Date.ToString("yyyy-MM-dd HH:mm:ss") & "')")
                 .executeNonQuery()
                 Try
@@ -1610,6 +1609,7 @@ Public Class clsTransactions
         Dim sURL As String = hostUrl & "/accurate/api/" & moduleName & "/delete.do?id=" & id
         Dim myWebReq As HttpWebRequest = DirectCast(WebRequest.Create(sURL), HttpWebRequest)
         Dim myWebResp As HttpWebResponse = Nothing
+        Dim responseContent As String = ""
         Try
             ServicePointManager.SecurityProtocol = DirectCast(3072, SecurityProtocolType)
             With myWebReq
@@ -1622,10 +1622,15 @@ Public Class clsTransactions
 
             myWebResp = DirectCast(myWebReq.GetResponse(), HttpWebResponse)
             Dim sr As New StreamReader(myWebResp.GetResponseStream())
-            Dim responseContent As String = sr.ReadToEnd()
+            responseContent = sr.ReadToEnd()
             sr.Dispose()
             myWebResp.Close()
+            errLog("Berhasil menghapus " & moduleName & " dengan ID " & id & " | Response: " & responseContent, "clsTransactions.DeleteAccurateTransactions")
             Return True
+        Catch ex As WebException
+            responseContent = ReadWebExceptionResponse(ex)
+            errLog("Gagal menghapus " & moduleName & " dengan ID " & id & " (WebException) | Detail: " & responseContent, "clsTransactions.DeleteAccurateTransactions")
+            Return False
         Catch ex As Exception
             errLog("Gagal menghapus " & moduleName & " dengan ID " & id & " | Error: " & ex.Message, "clsTransactions.DeleteAccurateTransactions")
             Return False
@@ -1651,8 +1656,8 @@ Public Class clsTransactions
         Dim complete As Boolean = True
         Dim cmd As New clsCMD(My.Settings.sKoneksi)
         Try
-            ' Match the source scope used by getTransSumSalesDaily (all rows for this outlet/day).
-            cmd.resetCmd("SELECT olnumber, IFNULL(SUM(subtotal),0) subtotal, IFNULL(SUM(tax),0) tax FROM cld_sumsalesdaily WHERE olid=" & solid &
+            ' Match the source scope used by getTransSumSalesDaily (all rows for this outlet/day, including Service in Subtotal).
+            cmd.resetCmd("SELECT olnumber, IFNULL(SUM(subtotal),0) + IFNULL(SUM(service),0) subtotal, IFNULL(SUM(tax),0) tax FROM cld_sumsalesdaily WHERE olid=" & solid &
                          " AND busidate >= '" & transDate.ToString("yyyy-MM-dd") & " 00:00:00' AND busidate < '" & transDate.AddDays(1).ToString("yyyy-MM-dd") & " 00:00:00' GROUP BY olnumber")
             Dim rows As DataTable = cmd.selectDatatable()
             For Each row As DataRow In rows.Rows
@@ -1693,15 +1698,17 @@ Public Class clsTransactions
                     Dim invFormat As Globalization.CultureInfo = Globalization.CultureInfo.InvariantCulture
                     Dim deltaSubtotal As Decimal = subtotal - Convert.ToDecimal(row("subtotal"))
                     Dim deltaTax As Decimal = tax - Convert.ToDecimal(row("tax"))
-                    Dim matches As Boolean = Decimal.Round(deltaSubtotal, 2, MidpointRounding.AwayFromZero) = 0D AndAlso Decimal.Round(deltaTax, 2, MidpointRounding.AwayFromZero) = 0D
+                    ' Toleransi selisih pembulatan: hingga Rp 100 dianggap pembulatan wajar (COCOK).
+                    ' Hanya perbedaan yang signifikan (> Rp 100) yang ditandai sebagai SELISIH.
+                    Dim isRoundingTolerance As Boolean = Math.Abs(deltaSubtotal) <= 100D AndAlso Math.Abs(deltaTax) <= 100D
+                    Dim matches As Boolean = isRoundingTolerance OrElse (Decimal.Round(deltaSubtotal, 2, MidpointRounding.AwayFromZero) = 0D AndAlso Decimal.Round(deltaTax, 2, MidpointRounding.AwayFromZero) = 0D)
                     errLog("[REKON_FAKTUR] Tanggal=" & transDate.ToString("yyyy-MM-dd") & " | OutletId=" & solid.ToString() & " | Faktur=" & number &
                            " | SubtotalLokal=" & Convert.ToDecimal(row("subtotal")).ToString(invFormat) & " | TaxLokal=" & Convert.ToDecimal(row("tax")).ToString(invFormat) &
                            " | SubtotalAccurate=" & subtotal.ToString(invFormat) & " | TaxAccurate=" & tax.ToString(invFormat) &
                            " | SelisihSubtotal=" & deltaSubtotal.ToString(invFormat) & " | SelisihTax=" & deltaTax.ToString(invFormat) &
-                           " | Status=" & If(matches, "COCOK", "SELISIH"), "clsTransactions.ReconcileSalesDaily")
-                    If Decimal.Round(subtotal - Convert.ToDecimal(row("subtotal")), 2, MidpointRounding.AwayFromZero) <> 0D OrElse
-                       Decimal.Round(tax - Convert.ToDecimal(row("tax")), 2, MidpointRounding.AwayFromZero) <> 0D Then
-                        issues.Add("SELISIH: " & number)
+                           " | Status=" & If(matches, If(isRoundingTolerance AndAlso (deltaSubtotal <> 0D OrElse deltaTax <> 0D), "COCOK (Toleransi Pembulatan)", "COCOK"), "SELISIH_SIGNIFIKAN"), "clsTransactions.ReconcileSalesDaily")
+                    If Not matches Then
+                        issues.Add("SELISIH_SIGNIFIKAN: " & number & " (Subtotal: " & deltaSubtotal.ToString(invFormat) & ", Tax: " & deltaTax.ToString(invFormat) & ")")
                     End If
                 Catch ex As Exception
                     complete = False

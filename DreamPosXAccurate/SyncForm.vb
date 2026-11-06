@@ -176,8 +176,14 @@ Public Class SyncForm
         Dim endDate As Date = Date.Today.AddDays(-1)
 
         If currentDate > endDate Then
-            errLog("Sync harian dibatalkan karena Trans Date lebih besar dari hari ini: " & currentDate.ToString("yyyy-MM-dd"), source)
-            Exit Sub
+            ' Jika user sengaja memilih tanggal hari ini di DateTimePicker, sesuaikan dateFrom ke H-1 agar sync tetap berjalan
+            If currentDate >= Date.Today Then
+                currentDate = Date.Today.AddDays(-1)
+                errLog("Trans Date yang dipilih adalah hari berjalan (" & dateFrom.ToString("yyyy-MM-dd") & "). Otomatis dialihkan ke H-1 (" & currentDate.ToString("yyyy-MM-dd") & ")", source)
+            Else
+                errLog("Sync harian dibatalkan karena Trans Date lebih besar dari H-1: " & currentDate.ToString("yyyy-MM-dd"), source)
+                Exit Sub
+            End If
         End If
 
         errLog("Mulai sync harian dari " & currentDate.ToString("yyyy-MM-dd") & " sampai " & endDate.ToString("yyyy-MM-dd"), source)
@@ -443,7 +449,8 @@ Public Class SyncForm
 
         Dim cCMD As New clsCMD(sConnection)
         Try
-            cCMD.resetCmd("SELECT ID, Kode, kode2 FROM cld_outlet WHERE brandID=" & brandId & _
+            cCMD.resetCmd("SELECT ID, Kode, kode2 FROM cld_outlet WHERE custid=" & scustid & _
+                          " AND brandID=" & brandId & _
                           " AND active=1 AND (eDate IS NULL OR eDate >= CURDATE()) AND IFNULL(kode2,'') <> ''")
             Dim dt As DataTable = cCMD.selectDatatable()
             errLog("[SyncBranch] Jumlah outlet dicek: " & dt.Rows.Count, source)
